@@ -1,0 +1,113 @@
+name: Build Release Artifacts
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: true
+          prerelease: false
+
+  build-deb:
+    name: Build for debian
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+
+      - name: Create the uberjar
+        run: mvn clean package --file github-actions-pom.xml
+
+      - name: Create platform executable
+        run: jpackage --input target --main-jar javafxdemo-0.1.0.jar --name javafxdemo --main-class  clojure.main --arguments -m --arguments javafxdemo.core  --linux-shortcut
+          
+      - name: Upload release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: javafxdemo_1.0-1_amd64.deb
+          asset_name: javafxdemo_1.0-1_amd64.deb
+          asset_content_type: application/vnd.debian.binary-package
+
+  build-dmg:
+    name: Build for MacOS
+    needs: release
+    runs-on: macos-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+
+      - name: Create the uberjar
+        run: mvn clean package --file github-actions-pom.xml
+
+      - name: Create platform executable
+        run: jpackage --input target --main-jar javafxdemo-0.1.0.jar --name javafxdemo --main-class  clojure.main --arguments -m --arguments javafxdemo.core
+          
+      - name: Upload release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: javafxdemo-1.0.dmg
+          asset_name: javafxdemo-1.0.dmg
+          asset_content_type: application/x-apple-diskimage
+
+  build-exe:
+    name: Build for windows
+    needs: release
+    runs-on: windows-latest
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Prepare java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 15
+
+      - name: Create the uberjar
+        run: mvn clean package --file github-actions-pom.xml
+
+      - name: Create platform executable
+        run: jpackage --input target --main-jar javafxdemo-0.1.0.jar --name javafxdemo --main-class  clojure.main --arguments -m --arguments javafxdemo.core --win-menu
+
+      - name: Upload release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: javafxdemo-1.0.exe
+          asset_name: javafxdemo-1.0.exe
+          asset_content_type: application/vnd.microsoft.portable-executable

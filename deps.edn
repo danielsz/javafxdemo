@@ -1,0 +1,6 @@
+{:deps {org.openjfx/javafx-controls {:mvn/version "15"}}
+ :aliases {:repl {:extra-deps {nrepl/nrepl {:mvn/version "0.8.2"}
+                               cider/cider-nrepl {:mvn/version "0.25.4"}
+                               org.danielsz/meyvn-nrepl-middleware {:mvn/version "1.1.7"}
+                               org.danielsz/system {:mvn/version "0.4.6"}}
+                  :extra-paths ["repl"]}}}

@@ -1,0 +1,17 @@
+{:pom {:group-id "org.danielsz"
+       :artifact-id "javafxdemo"
+       :version "0.1.0-SNAPSHOT"
+       :name "javafxdemo"}
+ :packaging {:uberjar
+             {:enabled true
+              :build-properties {:main-class "javafxdemo.core"
+                                 :javafx-class "javafxdemo.core.App"
+                                 :maven-compiler-source "11"
+                                 :maven-compiler-target "11"}              
+              :include-source false
+              :javafx {:enabled true}}}
+ :interactive {:enabled false
+               :reload-on-save true
+               :tools-deps-alias :repl
+               :repl-port :auto
+               :repl-host "127.0.0.1"}}
