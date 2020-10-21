@@ -10,7 +10,7 @@
                                  :maven-compiler-target "11"}              
               :include-source false
               :javafx {:enabled true}}}
- :interactive {:enabled false
+ :interactive {:enabled true
                :reload-on-save true
                :tools-deps-alias :repl
                :repl-port :auto

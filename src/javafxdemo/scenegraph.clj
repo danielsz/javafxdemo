@@ -9,16 +9,15 @@
              [javafx.scene.control Button]))
 
 (defn root []
-  (let [label (Label. (str "javafx " (System/getProperty "javafx.version") " running on java " (System/getProperty "java.version"))) 
+  (let [label (Label. (str "javafx " (System/getProperty "javafx.version") " on java " (System/getProperty "java.version")))
         button (Button. "Click me")
         imageview (-> "chimp.png"
                      io/resource
                      io/input-stream
-                     (Image.)
-                     (ImageView.))
-        vbox (VBox. 30 (into-array Node [imageview label button]))
-        scene (Scene. vbox 640 480)]
+                     Image.
+                     ImageView.)
+        vbox (VBox. 30 (into-array Node [imageview label button]))]
     (.setAlignment vbox Pos/CENTER)
     (doto imageview (.setFitHeight 100) (.setPreserveRatio true))
     (.setOnAction button (event-handler [_] (.setText label "You clicked me")))
-    scene))
+    (Scene. vbox 640 480)))
